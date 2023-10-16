@@ -1,6 +1,6 @@
 - name: 서버 메트릭 정보 수집
   hosts: all
-  gather_facts: no
+  gather_facts: yes
   # task 실행 분석을 영문으로 처리하기 위해 작성
   environment:
     LANG: en_US.UTF-8
