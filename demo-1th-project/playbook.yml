@@ -1,0 +1,23 @@
+- name: 서버 메트릭 정보 수집
+  hosts: all
+  gather_facts: no
+  # task 실행 분석을 영문으로 처리하기 위해 작성
+  environment:
+    LANG: en_US.UTF-8
+  tasks:
+    - name: CPU 사용률 수집
+      shell: top -bn1 | grep 'Cpu(s)' | awk '{print $2}'
+      register: cpu_usage
+    - name: MEM 사용률 수집
+      shell: top -bn1 | awk '/MiB Mem/ {printf "%.2f\n", $8/$4 * 100}'
+      register: mem_usage
+    - name: DISK 사용률 수집
+      shell: "df -h --output=pcent / | awk 'NR==2 {print $1}'"
+      register: disk_space
+    - name: 서버 메트릭 정보 출력
+      debug:
+        msg: 
+          - "실행시간: {{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}"
+          - "CPU 사용률: {{ cpu_usage.stdout }}%"
+          - "MEM 사용률: {{ mem_usage.stdout }}%"
+          - "Disk 사용률: {{ disk_space.stdout }}"
